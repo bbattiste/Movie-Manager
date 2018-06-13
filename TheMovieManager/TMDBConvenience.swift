@@ -74,16 +74,24 @@ extension TMDBClient {
     private func getRequestToken(_ completionHandlerForToken: @escaping (_ success: Bool, _ requestToken: String?, _ errorString: String?) -> Void) {
         
         /* 1. Specify parameters, the API method, and the HTTP body (if POST) */
+        let parameters = [String:AnyObject]()
+        
         /* 2. Make the request */
+        let _ = taskForGETMethod(Methods.AuthenticationTokenNew, parameters: parameters) { (results, error) in
+        
         /* 3. Send the desired value(s) to completion handler */
-        
-        /*
-        
-        taskForGETMethod(method, parameters: parameters) { (results, error) in
-        
+            if let error = error {
+                print(error)
+                completionHandlerForToken(false, nil, "Login Failed (Request Token).")
+            } else {
+                if let requestToken = results?[TMDBClient.JSONResponseKeys.RequestToken] as? String {
+                    completionHandlerForToken(true, requestToken, nil)
+                } else {
+                    print("Could not find \(TMDBClient.JSONResponseKeys.RequestToken) in \(String(describing: results))")
+                    completionHandlerForToken(false, nil, "Login Failed (Request Token).")
+                }
+            }
         }
-        
-        */
     }
     
     private func loginWithToken(_ requestToken: String?, hostViewController: UIViewController, completionHandlerForLogin: @escaping (_ success: Bool, _ errorString: String?) -> Void) {
