@@ -10,6 +10,8 @@ import UIKit
 
 // MARK: - LoginViewController: UIViewController
 
+// want to get request token, login with website, create session id, get user id, go to next view
+
 class LoginViewController: UIViewController {
 
     // MARK: Properties
@@ -49,11 +51,14 @@ class LoginViewController: UIViewController {
             Step 3: Create a session ID
             Bonus Step: Go ahead and get the user id 😄!
         */
+        TMDBClient.sharedInstance().authenticateWithViewController(self) { (succes, errorString) in
+            if succes {
+                self.completeLogin()
+            } else {
+                self.displayError(errorString)
+            }
+        }
         getRequestToken()
-        
-//        tmdbClient.taskForGETImage("medium", filePath: "path/to/file") { (imageData, error) in
-//            \\code
-//        }
     }
     
     
