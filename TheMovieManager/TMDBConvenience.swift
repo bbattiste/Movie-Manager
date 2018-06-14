@@ -113,32 +113,48 @@ extension TMDBClient {
     
     private func getSessionID(_ requestToken: String?, completionHandlerForSession: @escaping (_ success: Bool, _ sessionID: String?, _ errorString: String?) -> Void) {
         
-        /* 1. Specify parameters, the API method, and the HTTP body (if POST) */
+        /* 1. Specify parameters, method (if has {key}), and HTTP body (if POST) */
+        let parameters = [TMDBClient.ParameterKeys.RequestToken: requestToken!]
+        
         /* 2. Make the request */
-        /* 3. Send the desired value(s) to completion handler */
-        
-        /*
-        
-        taskForGETMethod(method, parameters: parameters) { (results, error) in
-        
+        let _ = taskForGETMethod(Methods.AuthenticationSessionNew, parameters: parameters as [String:AnyObject]) { (results, error) in
+            
+            /* 3. Send the desired value(s) to completion handler */
+            if let error = error {
+                print(error)
+                completionHandlerForSession(false, nil, "Login Failed (Session ID).")
+            } else {
+                if let sessionID = results?[TMDBClient.JSONResponseKeys.SessionID] as? String {
+                    completionHandlerForSession(true, sessionID, nil)
+                } else {
+                    print("Could not find \(TMDBClient.JSONResponseKeys.SessionID) in \(String(describing: results))")
+                    completionHandlerForSession(false, nil, "Login Failed (Session ID).")
+                }
+            }
         }
-        
-        */
     }
     
     private func getUserID(_ completionHandlerForUserID: @escaping (_ success: Bool, _ userID: Int?, _ errorString: String?) -> Void) {
         
         /* 1. Specify parameters, the API method, and the HTTP body (if POST) */
+        let parameters = [TMDBClient.ParameterKeys.SessionID: TMDBClient.sharedInstance().sessionID!]
+        
         /* 2. Make the request */
-        /* 3. Send the desired value(s) to completion handler */
-        
-        /*
-        
-        taskForGETMethod(method, parameters: parameters) { (results, error) in
-        
+        let _ = taskForGETMethod(Methods.Account, parameters: parameters as [String:AnyObject]) { (results, error) in
+            
+            /* 3. Send the desired value(s) to completion handler */
+            if let error = error {
+                print(error)
+                completionHandlerForUserID(false, nil, "Login Failed (User ID).")
+            } else {
+                if let userID = results?[TMDBClient.JSONResponseKeys.UserID] as? Int {
+                    completionHandlerForUserID(true, userID, nil)
+                } else {
+                    print("Could not find \(TMDBClient.JSONResponseKeys.UserID) in \(String(describing: results))")
+                    completionHandlerForUserID(false, nil, "Login Failed (User ID).")
+                }
+            }
         }
-        
-        */
     }
     
     // MARK: GET Convenience Methods
